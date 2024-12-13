@@ -19,7 +19,7 @@ monitor.setTextScale(1) -- Textskalierung anpassen
 
 while true do
     -- Energieinformationen abrufen
-    local energyStored = energyPeripheral.getEnergyStored() -- RF oder Joules
+    local energyStored = energyPeripheral.getEnergyStored(RF) -- RF oder Joules
     local maxEnergy = energyPeripheral.getMaxEnergyStored()
     local percentage = (energyStored / maxEnergy) * 100
 
