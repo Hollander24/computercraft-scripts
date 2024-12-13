@@ -1,16 +1,25 @@
--- Einstellungen
-local width = 40    -- Breite der Minenfläche (x-Achse)
-local length = 40   -- Länge der Minenfläche (z-Achse)
-local depth = 20    -- Tiefe der Minenfläche (y-Achse)
+-- Mining-Turtle Script für CraftOS 1.9
+-- Abbauen einer 40x40 Fläche und einer Tiefe von 20 Blöcken
 
--- Funktion, um einen Block vor der Turtle zu abbauen
+local width = 40   -- Breite der Fläche (x-Achse)
+local length = 40  -- Länge der Fläche (z-Achse)
+local depth = 20   -- Tiefe der Fläche (y-Achse)
+
+-- Funktion, um einen Block vor der Turtle abzubauen
 function mineBlock()
-    if turtle.detect() then
+    while turtle.detect() do
         turtle.dig()
     end
 end
 
--- Funktion, um die Turtle in der X-Achse zu bewegen
+-- Funktion, um einen Block unter der Turtle abzubauen
+function mineBelow()
+    while turtle.detectDown() do
+        turtle.digDown()
+    end
+end
+
+-- Funktion, um die Turtle nach vorne zu bewegen
 function moveForward()
     mineBlock()
     if not turtle.forward() then
@@ -19,34 +28,63 @@ function moveForward()
     end
 end
 
--- Funktion, um die Turtle in die Z-Achse zu bewegen
-function moveSideways()
-    mineBlock()
-    if not turtle.turnRight() then
-        turtle.dig()
-        turtle.turnRight()
-    end
-    if not turtle.forward() then
-        turtle.dig()
-        turtle.forward()
-    end
-    if not turtle.turnRight() then
-        turtle.dig()
-        turtle.turnRight()
+-- Funktion, um die Turtle nach unten zu bewegen
+function moveDown()
+    mineBelow()
+    if not turtle.down() then
+        turtle.digDown()
+        turtle.down()
     end
 end
 
--- Funktion zum Abbauen der gesamten Fläche
+-- Funktion, um die Turtle nach oben zu bewegen
+function moveUp()
+    if not turtle.up() then
+        turtle.digUp()
+        turtle.up()
+    end
+end
+
+-- Funktion, um die Turtle nach hinten zu bewegen
+function moveBack()
+    turtle.turnLeft()
+    turtle.turnLeft()
+    moveForward()
+    turtle.turnLeft()
+    turtle.turnLeft()
+end
+
+-- Funktion, um die Turtle in der Breite zu bewegen (links oder rechts)
+function moveSide()
+    turtle.turnRight()
+    moveForward()
+    turtle.turnLeft()
+end
+
+-- Funktion, um das gesamte Gebiet abzubauen
 function mineArea()
-    for x = 1, width do
-        for z = 1, length do
-            for y = 1, depth do
+    for y = 1, depth do
+        for x = 1, width do
+            for z = 1, length do
                 mineBlock()
-                moveSideways()
+                if z < length then
+                    moveForward()
+                end
             end
+            if x < width then
+                if x % 2 == 1 then
+                    moveSide()
+                else
+                    moveBack()
+                    moveSide()
+                end
+            end
+        end
+        if y < depth then
+            moveDown()
         end
     end
 end
 
--- Funktion zum Abbauen der Fläche auf gewünschter Ebene
+-- Start des Abbaus
 mineArea()
